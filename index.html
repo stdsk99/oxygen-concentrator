@@ -13,16 +13,16 @@
 <header>
   <div class="bar">
     <div class="logo">O₂</div>
-    <div class="brand">Oxygen Concentrator Repair Trainer<small>สื่อฝึกซ่อมและบำรุงรักษาเครื่องผลิตออกซิเจน · ด่านความปลอดภัย + 8 โมดูล</small></div>
+    <div class="brand">Oxygen Concentrator Repair Trainer<small>สื่อฝึกซ่อมและบำรุงรักษาเครื่องผลิตออกซิเจน · 8 โมดูล เรียนตามลำดับ</small></div>
   </div>
   <nav id="nav">
     <a href="#home" data-v="home">หน้าแรก</a>
-    <a href="#safety" data-v="safety">0 · ความปลอดภัย</a>
     <a href="#m1" data-v="m1">1 · หลักการทำงาน</a>
     <a href="#m2" data-v="m2">2 · การใช้งานสำหรับช่าง</a>
     <a href="#m3" data-v="m3">3 · ตรวจรับเครื่อง</a>
     <a href="#m4" data-v="m4">4 · PM ตามแผน</a>
     <a href="#m5" data-v="m5">5 · วิเคราะห์อาการเสีย</a>
+    <a href="#safety" data-v="safety">ด่านความปลอดภัย</a>
     <a href="#m6" data-v="m6">6 · ถอดเปลี่ยนชิ้นส่วน</a>
     <a href="#m7" data-v="m7">7 · ทดสอบหลังซ่อม</a>
     <a href="#m8" data-v="m8">8 · โจทย์ซ่อมจำลอง</a>
@@ -52,9 +52,9 @@
 </section>
 
 <section class="view" id="v-safety"><div id="safety-root"></div></section>
-<section class="view" id="v-gate"><h1>ต้องผ่านด่านความปลอดภัยก่อน</h1>
-  <p class="muted"><span id="gate-to"></span> เป็นงานที่เปิดตู้และทำงานกับไฟฟ้าและออกซิเจน ต้องผ่านด่านความปลอดภัย (ถูกครบ 5 ข้อ) ก่อนจึงจะเข้าได้</p>
-  <div class="tools"><a class="btn primary" href="#safety">ไปด่านความปลอดภัย →</a></div></section>
+<section class="view" id="v-gate"><h1>🔒 ยังเข้า<span id="gate-to"></span> ไม่ได้</h1>
+  <p class="muted">บทเรียนเปิดตามลำดับ ต้องผ่าน<b id="gate-need"></b> ก่อน (แบบทดสอบท้ายบทถูกอย่างน้อย 4 จาก 5 ข้อ ด่านความปลอดภัยต้องถูกครบ 5 ข้อ)</p>
+  <div class="tools"><a class="btn primary" id="gate-go" href="#home">ไป →</a></div></section>
 <section class="view" id="v-m1"><div id="m1-root"></div></section>
 <section class="view" id="v-m2"><div id="m2-root"></div></section>
 <section class="view" id="v-m3"><div id="m3-root"></div></section>

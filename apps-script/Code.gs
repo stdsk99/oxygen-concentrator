@@ -84,7 +84,7 @@ const APPS = {
      คะแนนรวม = เฉลี่ยของท้ายบท 7 โมดูล (ร้อยละ ครั้งที่ดีที่สุด) กับเฉลี่ยโหมดสอบ */
   o2: {
     name: 'Oxygen Concentrator Repair Trainer', kind: 'o2',
-    crit: { safety: 5, modQuiz: 7, examCases: 10, totalPct: 80 },
+    crit: { safety: 5, passPct: 80, modQuiz: 7, examCases: 10, totalPct: 80 },   // passPct = เกณฑ์ผ่านท้ายบทแต่ละโมดูล
     cert: {
       org1: 'ศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์',
       org2: '',
@@ -352,16 +352,16 @@ function evalCrit_(app, p) {
   const row = (t, v, ok, f) => rows.push({ t, v, ok: !!ok, f: Math.max(0, Math.min(1, f)) });
   let line;
   if (A.kind === 'o2') {
-    const nq = Object.keys(p.mq).length, ev = Object.keys(p.exam).map(k => p.exam[k]);
+    const nq = Object.keys(p.mq).filter(k => p.mq[k] >= C.passPct).length, ev = Object.keys(p.exam).map(k => p.exam[k]);
     const avg = ev.length ? Math.round(ev.reduce((x, y) => x + y, 0) / ev.length) : 0;
     const parts = ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7'].map(m => p.mq['mq:' + m] || 0).concat([avg]);
     const total = Math.round(parts.reduce((x, y) => x + y, 0) / parts.length);
     p.avg = avg; p.nExam = ev.length;
     row('ด่านความปลอดภัย ถูกครบ ' + C.safety + ' ข้อ', p.safety ? p.safety + '/' + C.safety : 'ยังไม่ได้ทำ', p.safety >= C.safety, p.safety / C.safety);
-    row('ท้ายบท ครบ ' + C.modQuiz + ' โมดูล', nq + '/' + C.modQuiz, nq >= C.modQuiz, nq / C.modQuiz);
+    row('ผ่านท้ายบท ครบ ' + C.modQuiz + ' โมดูล (โมดูลละ ≥ ' + C.passPct + '%)', nq + '/' + C.modQuiz, nq >= C.modQuiz, nq / C.modQuiz);
     row('โจทย์ซ่อม โหมดสอบ ' + C.examCases + ' เคส', ev.length + '/' + C.examCases + (ev.length ? ' · เฉลี่ย ' + avg : ''), ev.length >= C.examCases, ev.length / C.examCases);
     row('คะแนนรวม ≥ ' + C.totalPct + '%', total + '%', total >= C.totalPct, total / C.totalPct);
-    line = 'ด่านความปลอดภัย ' + p.safety + '/' + C.safety + ' · ท้ายบท ' + nq + ' โมดูล · โจทย์ซ่อม ' + ev.length + ' เคส เฉลี่ย ' + avg + ' · คะแนนรวม ' + total + '%';
+    line = 'ด่านความปลอดภัย ' + p.safety + '/' + C.safety + ' · ผ่านท้ายบท ' + nq + ' โมดูล · โจทย์ซ่อม ' + ev.length + ' เคส เฉลี่ย ' + avg + ' · คะแนนรวม ' + total + '%';
   } else if (A.kind === 'clinical') {
     const nr = Object.keys(p.read).length;
     row('อ่านบทเรียนครบ ' + C.readLessons + ' บท', nr + '/' + C.readLessons, nr >= C.readLessons, nr / C.readLessons);

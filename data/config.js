@@ -12,7 +12,7 @@ window.APP_CONFIG = {
   sheetUrl: "https://script.google.com/macros/s/AKfycbzLcs08L6W0fnHHZ5tCq8JjkXFPcux3G3_WT1t3vUC8zSo-oQKoACC3xHc67-h-yy6KTw/exec",
   token: "pump-2569",
   course: "ศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์",
-  emptyHint: "ยังไม่มีคะแนน เริ่มจากด่านความปลอดภัย แล้วทำแบบทดสอบท้ายบทของแต่ละโมดูล",
+  emptyHint: "ยังไม่มีคะแนน เริ่มจากโมดูล 1 แล้วทำแบบทดสอบท้ายบทให้ผ่านทีละโมดูล",
 
   cert: {
     org: ["ศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์"],
@@ -25,8 +25,9 @@ window.APP_CONFIG = {
 
   /* เกณฑ์ผ่าน (ต้องตรงกับ APPS.o2.crit ใน apps-script/Code.gs)
      safety    : ด่านความปลอดภัยต้องถูกครบ 5 ข้อ
-     modQuiz   : ทำแบบทดสอบท้ายบทครบ 7 โมดูล (โมดูล 1–7)
+     passPct   : เกณฑ์ผ่านแบบทดสอบท้ายบทแต่ละโมดูล (5 ข้อ → ถูกอย่างน้อย 4 ข้อ) ต้องผ่านจึงเปิดขั้นถัดไป
+     modQuiz   : ผ่านแบบทดสอบท้ายบทครบ 7 โมดูล (โมดูล 1–7)
      examCases : โจทย์ซ่อมจำลอง โหมดสอบ ครบ 10 เคส
      totalPct  : คะแนนรวม = เฉลี่ยของ (ท้ายบทโมดูล 1–7 ครั้งที่ดีที่สุด + เฉลี่ยโหมดสอบโมดูล 8) ต้องได้อย่างน้อย 80% */
-  criteria: { safety: 5, modQuiz: 7, examCases: 10, totalPct: 80 }
+  criteria: { safety: 5, passPct: 80, modQuiz: 7, examCases: 10, totalPct: 80 }
 };
