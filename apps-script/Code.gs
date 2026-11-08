@@ -2,6 +2,7 @@
    แอปที่รองรับ: pump = Infusion Pump Repair Trainer, incubator = Infant Incubator Repair Trainer,
    incubator-clin = วิชาคลินิก การใช้ตู้อบทารกอย่างปลอดภัย,
    pump-clin = วิชาคลินิก การใช้เครื่องควบคุมการให้สารละลายอย่างปลอดภัย,
+   o2-clin = วิชาคลินิก การใช้เครื่องผลิตออกซิเจนอย่างปลอดภัย,
    o2 = Oxygen Concentrator Repair Trainer (เกณฑ์แบบ kind 'o2': ด่านความปลอดภัย + ท้ายบท 7 โมดูล + โจทย์ซ่อม 10 เคส + คะแนนรวม)
    1) สมัคร / เข้าสู่ระบบ / เปลี่ยนรหัสผ่าน ทำที่เว็บหลัก (stdsk99/medtechcenter) ที่เดียว
       แอปฝึกซ่อมรับ "บัตรผ่าน" (session token) จากเว็บหลัก แล้วใช้ส่งคะแนน
@@ -95,6 +96,20 @@ const APPS = {
     },
     ref: 'OCT', tmplKey: 'TEMPLATE_ID_o2', logSheet: 'เกียรติบัตร ออกซิเจน', sumSheet: 'สรุป ออกซิเจน',
     folder: 'เกียรติบัตร Oxygen Concentrator', tmplName: 'แม่แบบเกียรติบัตร Oxygen Concentrator Trainer'
+  },
+  'o2-clin': {
+    name: 'Oxygen Concentrator Clinical Use', kind: 'clinical',
+    crit: { readLessons: 9, simPct: 80, quizPct: 80 },   // read:<บท> บันทึกเมื่อผ่านท้ายบท 4/5
+    cert: {
+      org1: 'ศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์',
+      org2: '',
+      title: 'การใช้เครื่องผลิตออกซิเจนอย่างปลอดภัย (Oxygen Concentrator Clinical Use)',
+      subject: 'ของศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์',
+      signer: 'รศ.ดร.ณัฐดนัย สิงห์คลีวรรณ',
+      signerPos: 'ผู้จัดทำสื่อการเรียนรู้'
+    },
+    ref: 'OCC', tmplKey: 'TEMPLATE_ID_o2_clin', logSheet: 'เกียรติบัตร ออกซิเจนคลินิก', sumSheet: 'สรุป ออกซิเจนคลินิก',
+    folder: 'เกียรติบัตร Oxygen Concentrator Clinical', tmplName: 'แม่แบบเกียรติบัตร Oxygen Concentrator Clinical Use'
   },
   'pump-clin': {
     name: 'Infusion Pump Clinical Use', kind: 'clinical',
@@ -498,6 +513,10 @@ function onOpen() {
       .addItem('1) สร้างแม่แบบเกียรติบัตร (ครั้งแรกครั้งเดียว)', 'makeTemplateO2')
       .addItem('2) สรุปผลผ่านเกณฑ์', 'evaluateO2')
       .addItem('3) ออกเกียรติบัตรให้ผู้ผ่านเกณฑ์', 'createCertificatesO2'))
+    .addSubMenu(ui.createMenu('เครื่องผลิตออกซิเจน วิชาคลินิก')
+      .addItem('1) สร้างแม่แบบเกียรติบัตร (ครั้งแรกครั้งเดียว)', 'makeTemplateO2Clin')
+      .addItem('2) สรุปผลผ่านเกณฑ์', 'evaluateO2Clin')
+      .addItem('3) ออกเกียรติบัตรให้ผู้ผ่านเกณฑ์', 'createCertificatesO2Clin'))
     .addToUi();
 }
 
@@ -616,6 +635,9 @@ function createCertificatesPumpClin() { createCertificates_('pump-clin'); }
 function makeTemplateO2() { makeTemplate_('o2'); }
 function evaluateO2() { evaluate_('o2'); }
 function createCertificatesO2() { createCertificates_('o2'); }
+function makeTemplateO2Clin() { makeTemplate_('o2-clin'); }
+function evaluateO2Clin() { evaluate_('o2-clin'); }
+function createCertificatesO2Clin() { createCertificates_('o2-clin'); }
 
 /* สร้างแม่แบบใน Google Slides (อาจารย์เปิดไปเพิ่มโลโก้และลายเซ็นได้) */
 function makeTemplate_(app) {

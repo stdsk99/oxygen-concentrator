@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>การใช้เครื่องผลิตออกซิเจนอย่างปลอดภัย</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/o2.css">
+<link rel="stylesheet" href="css/clin.css">
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="logo">O₂</div>
+    <div class="brand">การใช้เครื่องผลิตออกซิเจนอย่างปลอดภัย<small>วิชาคลินิก สำหรับพยาบาลและนักศึกษาพยาบาล · ฉบับทดลอง</small></div>
+  </div>
+  <nav id="nav">
+    <a href="#home" data-v="home">หน้าแรก</a>
+    <a href="#lessons" data-v="lessons">บทเรียน</a>
+    <a href="#sim" data-v="sim">เครื่องจำลอง</a>
+    <a href="#quiz" data-v="quiz">แบบทดสอบท้ายวิชา</a>
+    <a href="#scores" data-v="scores">ผลของฉัน</a>
+  </nav>
+</header>
+<main>
+<section class="view" id="v-home">
+  <h1>การใช้เครื่องผลิตออกซิเจนอย่างปลอดภัย</h1>
+  <p class="muted">วิชาสำหรับพยาบาลและนักศึกษาพยาบาล เรียนการใช้เครื่องผลิตออกซิเจนกับผู้ป่วยทั้งในหอผู้ป่วยและที่บ้าน ตั้งแต่หลักการทำงานในมุมผู้ใช้ ความปลอดภัยจากไฟ การตั้งเครื่องและการให้ออกซิเจน การดูแลผู้ป่วย การรับมือ alarm การทำความสะอาด จนถึงแผนสำรองและการแจ้งซ่อม</p>
+  <div class="cards">
+    <div class="card"><div class="num">ขั้นที่ 1</div><h3>บทเรียน 9 บท</h3><p>เรียนตามลำดับ แต่ละบทมีแบบทดสอบท้ายบท 5 ข้อ ต้องถูกอย่างน้อย 4 ข้อจึงเปิดบทถัดไป</p></div>
+    <div class="card"><div class="num">ขั้นที่ 2</div><h3>เครื่องจำลอง</h3><p>7 สถานการณ์จากหอผู้ป่วยและบ้านผู้ป่วย ตัดสินใจจากไฟสถานะ เสียงเตือน และ SpO₂ ต้องได้อย่างน้อย 80%</p></div>
+    <div class="card"><div class="num">ขั้นที่ 3</div><h3>แบบทดสอบท้ายวิชา</h3><p>สุ่ม 20 ข้อจากทุกบท ต้องได้อย่างน้อย 80% แล้วออกใบรับรองได้</p></div>
+  </div>
+  <div id="home-prog"></div>
+  <div class="note"><b>ฉบับทดลอง:</b> เนื้อหาเรียบเรียงจากแนวทางต่างประเทศ (ระบุแหล่งท้ายบท) ยังไม่ได้ผ่านการตรวจทานโดยพยาบาลหรือแพทย์ ตัวเลขทางคลินิกเป็นตัวอย่าง ค่าที่ใช้จริงต้องเป็นไปตามคำสั่งแพทย์และแนวทางของหน่วยงาน หากพบข้อผิดพลาดแจ้งได้ที่ theptharo2019@gmail.com</div>
+</section>
+<section class="view" id="v-lessons"><div id="lessons"></div></section>
+<section class="view" id="v-lesson"><div id="lesson"></div></section>
+<section class="view" id="v-sim"><div id="sim"></div></section>
+<section class="view" id="v-quiz"><div id="quiz"></div></section>
+<section class="view" id="v-scores"><div id="scores"></div></section>
+</main>
+<script src="data/config.js"></script>
+<script src="data/lessons.js"></script>
+<script src="data/sim.js"></script>
+<script src="../js/score.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/cert.js"></script>
+<script src="../js/widgets.js"></script>
+<script src="js/clin.js"></script>
+</body>
+</html>

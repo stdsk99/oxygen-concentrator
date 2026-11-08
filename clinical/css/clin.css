@@ -1,0 +1,31 @@
+/* ===== สไตล์วิชาคลินิก ===== */
+.clead{background:var(--accent-soft);border-radius:12px;padding:10px 14px;font-size:14px;margin:10px 0}
+.lesson h3{margin-top:18px}
+.lesson ul,.lesson ol{padding-left:22px}.lesson li{margin:4px 0}
+.tblwrap{overflow-x:auto;margin:10px 0}
+.ltbl{border-collapse:collapse;width:100%;font-size:14px;background:var(--card)}
+.ltbl th,.ltbl td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.ltbl th{background:var(--bg)}
+.warn{background:var(--warn-soft);border-left:4px solid var(--warn);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:14px}
+.tip{background:var(--low-soft);border-left:4px solid var(--low);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:14px}
+.srcs{font-size:13px;color:var(--muted);margin-top:18px;border-top:1px solid var(--line);padding-top:8px}
+.srcs ol{padding-left:20px}
+.llist{display:grid;gap:8px;margin-top:12px}
+.lrow{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;text-decoration:none;color:inherit}
+.lrow:hover{border-color:var(--accent)}
+.lrow .ln{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--line);font-weight:600;flex:none}
+.lrow.ok .ln{background:var(--accent);color:#fff}
+.lrow.lk{opacity:.5}
+.lrow small{display:block;color:var(--muted)}
+.prog{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.prog span{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px}
+.prog span.ok{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.scbox{display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:start;margin:12px 0}
+@media (max-width:640px){.scbox{grid-template-columns:1fr}.scbox svg{max-width:220px;margin:0 auto}}
+.stnote{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:14px}
+.stnote .snd{color:var(--warn);font-weight:600}
+.spo2{font-family:ui-monospace,monospace;font-size:20px;font-weight:700}
+.opt-fb{font-size:13px;margin-top:4px;color:var(--muted)}
+.simopts .lopt{display:block;text-align:left}
+.lopt.wrong{border-color:var(--warn);background:var(--warn-soft)}
+.lopt.wrong,.lopt.good{opacity:1}
