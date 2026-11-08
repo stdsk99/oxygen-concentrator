@@ -44,10 +44,10 @@ apps-script/        Code.gs ที่เพิ่มแอป o2 แล้ว
 ## ก่อนเปิดใช้
 
 1. อัปเดต Apps Script ด้วย `apps-script/Code.gs` แล้ว Deploy เป็น New version (ดู `apps-script/README.md`)
-2. เปิด GitHub Pages: Settings → Pages → Deploy from a branch, `main`, `/ (root)` → `https://stdsk99.github.io/oxygen-concentrator-trainer/`
+2. เปิด GitHub Pages: Settings → Pages → Deploy from a branch, `main`, `/ (root)` → `https://stdsk99.github.io/oxygen-concentrator/`
 3. เพิ่มวิชาในเว็บหลัก (branch `add-oxygen-concentrator` ของ stdsk99/medtechcenter)
 
-ผู้สอนดูเนื้อหาได้โดยไม่ต้องเข้าสู่ระบบที่ `…/oxygen-concentrator-trainer/?preview` (คะแนนไม่ส่งเข้าระบบ)
+ผู้สอนดูเนื้อหาได้โดยไม่ต้องเข้าสู่ระบบที่ `…/oxygen-concentrator/?preview` (คะแนนไม่ส่งเข้าระบบ)
 
 ## หมายเหตุ
 
