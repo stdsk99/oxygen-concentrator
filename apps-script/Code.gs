@@ -40,7 +40,7 @@ const MAX_FAILS = 5, LOCK_MIN = 15, TOKEN_DAYS = 30, HASH_ROUNDS = 300;
 const APPS = {
   pump: {
     name: 'Infusion Pump Repair Trainer', kind: 'repair', clinLabel: 'การใช้งานสำหรับช่าง',
-    crit: { learnCases: 8, examCases: 8, examAvg: 70, quizPct: 80, orderTasks: 3, clinSimPct: 80, acceptPct: 80, pmPct: 80 },   // clinSimPct = โมดูล 7 · acceptPct = โมดูล 8 ตรวจรับ · pmPct = โมดูล 9 PM
+    crit: { learnCases: 8, examCases: 8, examAvg: 70, quizPct: 80, orderTasks: 3, clinSimPct: 80, acceptPct: 80, pmPct: 80, modTests: 8 },   // clinSimPct = โมดูล 6 · acceptPct = โมดูล 7 ตรวจรับ · pmPct = โมดูล 8 PM · modTests = สอบท้ายโมดูลผ่านครบ
     cert: {
       org1: 'ศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์',
       org2: '',
@@ -54,7 +54,7 @@ const APPS = {
   },
   incubator: {
     name: 'Infant Incubator Repair Trainer', kind: 'repair', clinLabel: 'การใช้งานสำหรับช่าง',
-    crit: { learnCases: 8, examCases: 8, examAvg: 70, quizPct: 80, orderTasks: 3, clinSimPct: 80, acceptPct: 80, pmPct: 80 },   // clinSimPct = โมดูล 7 ฝึกตั้งค่า + มุมช่าง · acceptPct = โมดูล 8 · pmPct = โมดูล 9
+    crit: { learnCases: 8, examCases: 8, examAvg: 70, quizPct: 80, orderTasks: 3, clinSimPct: 80, acceptPct: 80, pmPct: 80, modTests: 8 },   // clinSimPct = โมดูล 6 ฝึกตั้งค่า + มุมช่าง · acceptPct = โมดูล 7 · pmPct = โมดูล 8 · modTests = สอบท้ายโมดูลผ่านครบ
     cert: {
       org1: 'ศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์',
       org2: '',
@@ -69,7 +69,7 @@ const APPS = {
   /* วิชาคลินิก (พยาบาลและนักศึกษาพยาบาล): อ่านบทเรียน + เครื่องจำลอง + แบบทดสอบ */
   'incubator-clin': {
     name: 'Infant Incubator Clinical Use', kind: 'clinical',
-    crit: { readLessons: 9, simPct: 80, quizPct: 80 },
+    crit: { readLessons: 9, simPct: 80, quizPct: 80, modTests: 9 },
     cert: {
       org1: 'ศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์',
       org2: '',
@@ -113,7 +113,7 @@ const APPS = {
   },
   'pump-clin': {
     name: 'Infusion Pump Clinical Use', kind: 'clinical',
-    crit: { readLessons: 9, simPct: 80, quizPct: 80 },
+    crit: { readLessons: 9, simPct: 80, quizPct: 80, modTests: 9 },
     cert: {
       org1: 'ศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์',
       org2: '',
@@ -344,6 +344,8 @@ function enroll_(u, d) {
 }
 
 /* ---------------- เกณฑ์ผ่าน (ใช้ร่วมกันทั้งเว็บหลัก สรุปผล และเกียรติบัตร) ---------------- */
+/* สอบท้ายโมดูล/ท้ายบท (key mq:<id>) นับว่าผ่านเมื่อได้อย่างน้อยร้อยละนี้ (4 จาก 5 ข้อ) */
+const MQ_PASS_PCT = 80;
 function newAcc_() { return { learn: {}, exam: {}, order: {}, read: {}, mq: {}, safety: 0, quiz: 0, clin: 0, csim: 0, accept: 0, pm: 0, any: false }; }
 /* เพิ่มคะแนน 1 แถวเข้าตัวสะสม */
 function addScore_(p, key, sc, mx) {
@@ -382,6 +384,7 @@ function evalCrit_(app, p) {
     row('อ่านบทเรียนครบ ' + C.readLessons + ' บท', nr + '/' + C.readLessons, nr >= C.readLessons, nr / C.readLessons);
     row('เครื่องจำลอง ≥ ' + C.simPct + '%', p.csim ? p.csim + '%' : 'ยังไม่ได้ทำ', p.csim >= C.simPct, p.csim / C.simPct);
     row('แบบทดสอบ ≥ ' + C.quizPct + '%', p.quiz ? p.quiz + '%' : 'ยังไม่ได้ทำ', p.quiz >= C.quizPct, p.quiz / C.quizPct);
+    if (C.modTests) { const nm = Object.keys(p.mq).filter(k => p.mq[k] >= MQ_PASS_PCT).length; row('ผ่านสอบท้ายบทครบ ' + C.modTests + ' บท', nm + '/' + C.modTests, nm >= C.modTests, nm / C.modTests); }
     line = 'บทเรียน ' + nr + ' บท · เครื่องจำลอง ' + p.csim + '% · แบบทดสอบ ' + p.quiz + '%';
   } else {
     const ev = Object.keys(p.exam).map(k => p.exam[k]), nl = Object.keys(p.learn).length, no = Object.keys(p.order).length;
@@ -395,6 +398,7 @@ function evalCrit_(app, p) {
     if (C.clinSimPct) row(A.clinLabel + ' ≥ ' + C.clinSimPct + '%', p.clin ? p.clin + '%' : 'ยังไม่ได้ทำ', p.clin >= C.clinSimPct, p.clin / C.clinSimPct);
     if (C.acceptPct) row('ตรวจรับเครื่อง ≥ ' + C.acceptPct + '%', p.accept ? p.accept + '%' : 'ยังไม่ได้ทำ', p.accept >= C.acceptPct, p.accept / C.acceptPct);
     if (C.pmPct) row('PM ตามแผน ≥ ' + C.pmPct + '%', p.pm ? p.pm + '%' : 'ยังไม่ได้ทำ', p.pm >= C.pmPct, p.pm / C.pmPct);
+    if (C.modTests) { const nm = Object.keys(p.mq).filter(k => p.mq[k] >= MQ_PASS_PCT).length; row('ผ่านสอบท้ายโมดูลครบ ' + C.modTests + ' โมดูล', nm + '/' + C.modTests, nm >= C.modTests, nm / C.modTests); }
     line = 'โหมดเรียนรู้ ' + nl + ' เคส · โหมดสอบเฉลี่ย ' + avg + ' คะแนน · แบบทดสอบ ' + p.quiz + '% · ลำดับขั้นตอน ' + no + ' งาน'
       + (C.clinSimPct ? ' · ' + A.clinLabel + ' ' + p.clin + '%' : '')
       + (C.acceptPct ? ' · ตรวจรับ ' + p.accept + '%' : '') + (C.pmPct ? ' · PM ' + p.pm + '%' : '');
