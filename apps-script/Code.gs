@@ -3,7 +3,8 @@
    incubator-clin = วิชาคลินิก การใช้ตู้อบทารกอย่างปลอดภัย,
    pump-clin = วิชาคลินิก การใช้เครื่องควบคุมการให้สารละลายอย่างปลอดภัย,
    o2-clin = วิชาคลินิก การใช้เครื่องผลิตออกซิเจนอย่างปลอดภัย,
-   o2 = Oxygen Concentrator Repair Trainer (เกณฑ์แบบ kind 'o2': ด่านความปลอดภัย + ท้ายบท 7 โมดูล + โจทย์ซ่อม 10 เคส + คะแนนรวม)
+   o2 = Oxygen Concentrator Repair Trainer (เกณฑ์แบบ kind 'o2': ด่านความปลอดภัย + ท้ายบท 7 โมดูล + โจทย์ซ่อม 10 เคส + คะแนนรวม),
+   suction = Medical Suction Repair Trainer (เกณฑ์แบบ kind 'repair' 10 เคส · สอบท้ายโมดูล 4 ด่านความปลอดภัยต้องได้ 100%)
    1) สมัคร / เข้าสู่ระบบ / เปลี่ยนรหัสผ่าน ทำที่เว็บหลัก (stdsk99/medtechcenter) ที่เดียว
       แอปฝึกซ่อมรับ "บัตรผ่าน" (session token) จากเว็บหลัก แล้วใช้ส่งคะแนน
    2) เมนู "ผู้ใช้" ใน Google Sheets: ดูข้อมูล รีเซ็ตรหัสผ่าน ระงับบัญชี ยกเลิกการลงทะเบียน (ไม่มีการลบผู้ใช้)
@@ -110,6 +111,21 @@ const APPS = {
     },
     ref: 'OCC', tmplKey: 'TEMPLATE_ID_o2_clin', logSheet: 'เกียรติบัตร ออกซิเจนคลินิก', sumSheet: 'สรุป ออกซิเจนคลินิก',
     folder: 'เกียรติบัตร Oxygen Concentrator Clinical', tmplName: 'แม่แบบเกียรติบัตร Oxygen Concentrator Clinical Use'
+  },
+  /* เครื่องดูดทางการแพทย์: เกณฑ์แบบวิชาซ่อม (kind 'repair') 10 เคส · mqPass = เกณฑ์สอบท้ายโมดูลเฉพาะโมดูล (ร้อยละ) */
+  suction: {
+    name: 'Medical Suction Repair Trainer', kind: 'repair', clinLabel: 'การใช้งานสำหรับช่าง',
+    crit: { learnCases: 10, examCases: 10, examAvg: 70, quizPct: 80, orderTasks: 3, clinSimPct: 80, acceptPct: 80, pmPct: 80, modTests: 8, mqPass: { 'mq:safety': 100 } },   // clinSimPct = โมดูล 3 · acceptPct = โมดูล 5 · pmPct = โมดูล 6 · โมดูล 4 ด่านความปลอดภัยต้องถูกครบ 5 ข้อ
+    cert: {
+      org1: 'ศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์',
+      org2: '',
+      title: 'การฝึกซ่อมและบำรุงรักษาเครื่องดูดทางการแพทย์ (Medical Suction)',
+      subject: 'ของศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์',
+      signer: 'รศ.ดร.ณัฐดนัย สิงห์คลีวรรณ',
+      signerPos: 'ผู้จัดทำสื่อการเรียนรู้'
+    },
+    ref: 'SUT', tmplKey: 'TEMPLATE_ID_suction', logSheet: 'เกียรติบัตร เครื่องดูด', sumSheet: 'สรุป เครื่องดูด',
+    folder: 'เกียรติบัตร Medical Suction', tmplName: 'แม่แบบเกียรติบัตร Medical Suction Trainer'
   },
   'pump-clin': {
     name: 'Infusion Pump Clinical Use', kind: 'clinical',
@@ -398,7 +414,7 @@ function evalCrit_(app, p) {
     if (C.clinSimPct) row(A.clinLabel + ' ≥ ' + C.clinSimPct + '%', p.clin ? p.clin + '%' : 'ยังไม่ได้ทำ', p.clin >= C.clinSimPct, p.clin / C.clinSimPct);
     if (C.acceptPct) row('ตรวจรับเครื่อง ≥ ' + C.acceptPct + '%', p.accept ? p.accept + '%' : 'ยังไม่ได้ทำ', p.accept >= C.acceptPct, p.accept / C.acceptPct);
     if (C.pmPct) row('PM ตามแผน ≥ ' + C.pmPct + '%', p.pm ? p.pm + '%' : 'ยังไม่ได้ทำ', p.pm >= C.pmPct, p.pm / C.pmPct);
-    if (C.modTests) { const nm = Object.keys(p.mq).filter(k => p.mq[k] >= MQ_PASS_PCT).length; row('ผ่านสอบท้ายโมดูลครบ ' + C.modTests + ' โมดูล', nm + '/' + C.modTests, nm >= C.modTests, nm / C.modTests); }
+    if (C.modTests) { const nm = Object.keys(p.mq).filter(k => p.mq[k] >= ((C.mqPass || {})[k] || MQ_PASS_PCT)).length; row('ผ่านสอบท้ายโมดูลครบ ' + C.modTests + ' โมดูล', nm + '/' + C.modTests, nm >= C.modTests, nm / C.modTests); }
     line = 'โหมดเรียนรู้ ' + nl + ' เคส · โหมดสอบเฉลี่ย ' + avg + ' คะแนน · แบบทดสอบ ' + p.quiz + '% · ลำดับขั้นตอน ' + no + ' งาน'
       + (C.clinSimPct ? ' · ' + A.clinLabel + ' ' + p.clin + '%' : '')
       + (C.acceptPct ? ' · ตรวจรับ ' + p.accept + '%' : '') + (C.pmPct ? ' · PM ' + p.pm + '%' : '');
@@ -521,6 +537,10 @@ function onOpen() {
       .addItem('1) สร้างแม่แบบเกียรติบัตร (ครั้งแรกครั้งเดียว)', 'makeTemplateO2Clin')
       .addItem('2) สรุปผลผ่านเกณฑ์', 'evaluateO2Clin')
       .addItem('3) ออกเกียรติบัตรให้ผู้ผ่านเกณฑ์', 'createCertificatesO2Clin'))
+    .addSubMenu(ui.createMenu('เครื่องดูด (Medical Suction)')
+      .addItem('1) สร้างแม่แบบเกียรติบัตร (ครั้งแรกครั้งเดียว)', 'makeTemplateSuction')
+      .addItem('2) สรุปผลผ่านเกณฑ์', 'evaluateSuction')
+      .addItem('3) ออกเกียรติบัตรให้ผู้ผ่านเกณฑ์', 'createCertificatesSuction'))
     .addToUi();
 }
 
@@ -642,6 +662,9 @@ function createCertificatesO2() { createCertificates_('o2'); }
 function makeTemplateO2Clin() { makeTemplate_('o2-clin'); }
 function evaluateO2Clin() { evaluate_('o2-clin'); }
 function createCertificatesO2Clin() { createCertificates_('o2-clin'); }
+function makeTemplateSuction() { makeTemplate_('suction'); }
+function evaluateSuction() { evaluate_('suction'); }
+function createCertificatesSuction() { createCertificates_('suction'); }
 
 /* สร้างแม่แบบใน Google Slides (อาจารย์เปิดไปเพิ่มโลโก้และลายเซ็นได้) */
 function makeTemplate_(app) {
