@@ -276,9 +276,10 @@ function doPost(e) {
       case 'register': return out_(register_(String(d.sid || '').trim(), d));
       case 'login': return out_(login_(String(d.sid || '').trim(), d));
       case 'chpw': return out_(chpw_(d));
-      case 'portal': case 'enroll': case 'app': case 'score': {
+      case 'portal': case 'enroll': case 'app': case 'score': case 'cert': {
         const a = auth_(d.tk); if (a.err) return out_({ ok: false, err: a.err });
         if (d.action === 'portal') return out_(portal_(a.u));
+        if (d.action === 'cert') return out_(certPdf_(a.u, String(d.app || '')));
         if (d.action === 'enroll') return out_(enroll_(a.u, d));
         if (d.action === 'app') return out_(app_(a.u, d));
         return out_(score_(a.u, d));
@@ -762,38 +763,79 @@ function thaiDate_(d) {
   return d.getDate() + ' ' + M[d.getMonth()] + ' พ.ศ. ' + (d.getFullYear() + 543);
 }
 
-/* ออกเกียรติบัตร PDF ให้ผู้ผ่านเกณฑ์ของแอปที่เลือก ที่ยังไม่เคยได้รับ */
+/* ---------------- ออกเกียรติบัตร PDF ----------------
+   ใช้ร่วมกันระหว่างเมนู 3) ในชีต (ออกให้ทีละหลายคน) และปุ่ม "ดาวน์โหลดเกียรติบัตร" ของผู้เรียน (action 'cert')
+   เลขที่ = <ref>-<ปี พ.ศ.>-<ลำดับแถวในแท็บบันทึก> จึงต้องเรียกภายใต้ LockService (doPost ถือ lock อยู่แล้ว) */
+function certLog_(A) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const log = ss.getSheetByName(A.logSheet) || ss.insertSheet(A.logSheet);
+  if (log.getLastRow() === 0) { log.appendRow(['รหัสผู้ใช้', 'ชื่อ-สกุล', 'เลขที่', 'วันที่ออก', 'ไฟล์ PDF']); log.setFrozenRows(1); }
+  return log;
+}
+function certFolder_(A) {
+  const it = DriveApp.getFoldersByName(A.folder);
+  return it.hasNext() ? it.next() : DriveApp.createFolder(A.folder);
+}
+/* สร้าง PDF ให้ 1 คน บันทึกแถวในแท็บบันทึก คืน {ref, pdf} */
+function issueOne_(A, tid, log, folder, sid, name, now) {
+  const ref = A.ref + '-' + (now.getFullYear() + 543) + '-' + String(log.getLastRow()).padStart(3, '0');
+  const copy = DriveApp.getFileById(tid).makeCopy('tmp ' + sid, folder);
+  const pres = SlidesApp.openById(copy.getId());
+  pres.replaceAllText('{{name}}', name);
+  pres.replaceAllText('{{idline}}', '');   // แม่แบบเดิม: เว้นว่าง ไม่แสดงรหัสนักศึกษา/หน่วยงาน
+  pres.replaceAllText('{{sid}}', '');
+  pres.replaceAllText('{{date}}', thaiDate_(now));
+  pres.replaceAllText('{{ref}}', ref);
+  pres.replaceAllText('{{scores}}', '');   // แม่แบบเดิม: เว้นว่าง ไม่แสดงคะแนนรายโมดูล
+  pres.saveAndClose();
+  const pdf = folder.createFile(copy.getAs('application/pdf')).setName('เกียรติบัตร-' + sid + '-' + name + '.pdf');
+  copy.setTrashed(true);
+  log.appendRow([sid, name, ref, now, pdf.getUrl()]);
+  log.getRange(log.getLastRow(), 1).setNumberFormat('@').setValue(sid);
+  return { ref, pdf };
+}
+
+/* เมนู 3) ออกเกียรติบัตร PDF ให้ผู้ผ่านเกณฑ์ของแอปที่เลือก ที่ยังไม่เคยได้รับ */
 function createCertificates_(app) {
   const A = APPS[app];
   const ui = SpreadsheetApp.getUi();
   const tid = PropertiesService.getScriptProperties().getProperty(A.tmplKey);
   if (!tid) { ui.alert('ยังไม่มีแม่แบบของ ' + A.name + ' ให้เลือกเมนู 1) สร้างแม่แบบเกียรติบัตร ก่อน'); return; }
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const log = ss.getSheetByName(A.logSheet) || ss.insertSheet(A.logSheet);
-  if (log.getLastRow() === 0) { log.appendRow(['รหัสผู้ใช้', 'ชื่อ-สกุล', 'เลขที่', 'วันที่ออก', 'ไฟล์ PDF']); log.setFrozenRows(1); }
-  const issued = {};
-  if (log.getLastRow() > 1) log.getRange(2, 1, log.getLastRow() - 1, 1).getValues().forEach(r => issued[String(r[0])] = 1);
-  const it = DriveApp.getFoldersByName(A.folder);
-  const folder = it.hasNext() ? it.next() : DriveApp.createFolder(A.folder);
-  const now = new Date();
-  const todo = summarize_(app).filter(p => p.pass && !issued[p.sid]);
-  if (!todo.length) { ui.alert('ไม่มีผู้ผ่านเกณฑ์รายใหม่ที่ต้องออกเกียรติบัตร (' + A.name + ')'); return; }
-  let n = log.getLastRow();
-  todo.forEach(p => {
-    const ref = A.ref + '-' + (now.getFullYear() + 543) + '-' + String(n).padStart(3, '0');
-    const copy = DriveApp.getFileById(tid).makeCopy('tmp ' + p.sid, folder);
-    const pres = SlidesApp.openById(copy.getId());
-    pres.replaceAllText('{{name}}', p.name);
-    pres.replaceAllText('{{idline}}', '');   // แม่แบบเดิม: เว้นว่าง ไม่แสดงรหัสนักศึกษา/หน่วยงาน
-    pres.replaceAllText('{{sid}}', '');
-    pres.replaceAllText('{{date}}', thaiDate_(now));
-    pres.replaceAllText('{{ref}}', ref);
-    pres.replaceAllText('{{scores}}', '');   // แม่แบบเดิม: เว้นว่าง ไม่แสดงคะแนนรายโมดูล
-    pres.saveAndClose();
-    const pdf = folder.createFile(copy.getAs('application/pdf')).setName('เกียรติบัตร-' + p.sid + '-' + p.name + '.pdf');
-    copy.setTrashed(true);
-    log.appendRow([p.sid, p.name, ref, now, pdf.getUrl()]);
-    n++;
-  });
-  ui.alert('ออกเกียรติบัตรแล้ว ' + todo.length + ' ฉบับ\nไฟล์อยู่ในโฟลเดอร์ "' + A.folder + '" ใน Google Drive และมีลิงก์ในแท็บ "' + A.logSheet + '"');
+  const lock = LockService.getScriptLock(); lock.waitLock(30000);
+  try {
+    const log = certLog_(A);
+    const issued = {};
+    if (log.getLastRow() > 1) log.getRange(2, 1, log.getLastRow() - 1, 1).getValues().forEach(r => issued[String(r[0]).trim()] = 1);
+    const todo = summarize_(app).filter(p => p.pass && !issued[p.sid]);
+    if (!todo.length) { ui.alert('ไม่มีผู้ผ่านเกณฑ์รายใหม่ที่ต้องออกเกียรติบัตร (' + A.name + ')'); return; }
+    const folder = certFolder_(A), now = new Date();
+    todo.forEach(p => issueOne_(A, tid, log, folder, p.sid, p.name, now));
+    ui.alert('ออกเกียรติบัตรแล้ว ' + todo.length + ' ฉบับ\nไฟล์อยู่ในโฟลเดอร์ "' + A.folder + '" ใน Google Drive และมีลิงก์ในแท็บ "' + A.logSheet + '"');
+  } finally { lock.releaseLock(); }
+}
+
+/* ผู้เรียนกด "ดาวน์โหลดเกียรติบัตร": ตรวจเกณฑ์จากคะแนนในชีต ถ้าเคยออกแล้วส่งไฟล์เดิม ถ้ายังไม่เคยออกให้ใหม่
+   คืน {ok, ref, file, b64} (PDF เข้ารหัส base64 ส่งตรงถึงผู้เรียน ไม่ต้องแชร์ไฟล์ใน Drive) */
+function certPdf_(u, app) {
+  const A = APPS[app];
+  if (!A) return { ok: false, err: 'bad' };
+  const log = certLog_(A);
+  let ref = '', fileId = '';
+  if (log.getLastRow() > 1) {
+    const c = log.getRange(2, 1, log.getLastRow() - 1, 1).createTextFinder(u.sid).matchEntireCell(true).findNext();
+    if (c) {
+      const r = log.getRange(c.getRow(), 1, 1, 5).getValues()[0];
+      ref = String(r[2]); const m = String(r[4] || '').match(/[-\w]{25,}/); fileId = m ? m[0] : '';
+    }
+  }
+  if (!ref) {
+    if (!progressOf_(u.sid)[app].pass) return { ok: false, err: 'notpass' };
+    const tid = PropertiesService.getScriptProperties().getProperty(A.tmplKey);
+    if (!tid) return { ok: false, err: 'notmpl' };
+    const o = issueOne_(A, tid, log, certFolder_(A), u.sid, u.name, new Date());
+    ref = o.ref; fileId = o.pdf.getId();
+  }
+  let blob;
+  try { blob = DriveApp.getFileById(fileId).getBlob(); } catch (e) { return { ok: false, err: 'nofile', ref }; }
+  return { ok: true, ref, file: 'Certificate-' + ref + '.pdf', b64: Utilities.base64Encode(blob.getBytes()) };
 }

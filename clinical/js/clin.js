@@ -145,7 +145,7 @@
     const root=document.getElementById("quiz");
     if(lockedQuiz()){ root.innerHTML=`<h1>🔒 แบบทดสอบท้ายวิชา</h1><p class="muted">ต้องผ่านครบ 9 บทและเครื่องจำลองอย่างน้อย ${CR.simPct}% ก่อน</p><div class="tools"><a class="btn primary" href="${lockedSim()?"#lessons":"#sim"}">ไป${lockedSim()?"บทเรียน":"เครื่องจำลอง"} →</a></div>`; return; }
     const bank=L.flatMap(x=>x.quiz), n=CR.finalN||20;
-    quiz(root, {bank, n, pass:Math.ceil(n*CR.quizPct/100), key:"quiz", mod:"แบบทดสอบ", item:`แบบทดสอบท้ายวิชา ${n} ข้อ`, title:"แบบทดสอบท้ายวิชา", next:["#scores","ผลของฉันและใบรับรอง"]});
+    quiz(root, {bank, n, pass:Math.ceil(n*CR.quizPct/100), key:"quiz", mod:"แบบทดสอบ", item:`แบบทดสอบท้ายวิชา ${n} ข้อ`, title:"แบบทดสอบท้ายวิชา", next:["#scores","ผลของฉันและเกียรติบัตร"]});
   }
 
   /* ---------- เส้นทาง ---------- */
