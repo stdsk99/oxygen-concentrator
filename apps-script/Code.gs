@@ -4,7 +4,8 @@
    pump-clin = วิชาคลินิก การใช้เครื่องควบคุมการให้สารละลายอย่างปลอดภัย,
    o2-clin = วิชาคลินิก การใช้เครื่องผลิตออกซิเจนอย่างปลอดภัย,
    o2 = Oxygen Concentrator Repair Trainer (เกณฑ์แบบ kind 'o2': ด่านความปลอดภัย + ท้ายบท 7 โมดูล + โจทย์ซ่อม 10 เคส + คะแนนรวม),
-   suction = Medical Suction Repair Trainer (เกณฑ์แบบ kind 'repair' 10 เคส · สอบท้ายโมดูล 4 ด่านความปลอดภัยต้องได้ 100%)
+   suction = Medical Suction Repair Trainer (เกณฑ์แบบ kind 'repair' 10 เคส · สอบท้ายโมดูล 4 ด่านความปลอดภัยต้องได้ 100%),
+   suction-clin = วิชาคลินิก การใช้เครื่องดูดทางการแพทย์อย่างปลอดภัย
    1) สมัคร / เข้าสู่ระบบ / เปลี่ยนรหัสผ่าน ทำที่เว็บหลัก (stdsk99/medtechcenter) ที่เดียว
       แอปฝึกซ่อมรับ "บัตรผ่าน" (session token) จากเว็บหลัก แล้วใช้ส่งคะแนน
    2) เมนู "ผู้ใช้" ใน Google Sheets: ดูข้อมูล รีเซ็ตรหัสผ่าน ระงับบัญชี ยกเลิกการลงทะเบียน (ไม่มีการลบผู้ใช้)
@@ -126,6 +127,20 @@ const APPS = {
     },
     ref: 'SUT', tmplKey: 'TEMPLATE_ID_suction', logSheet: 'เกียรติบัตร เครื่องดูด', sumSheet: 'สรุป เครื่องดูด',
     folder: 'เกียรติบัตร Medical Suction', tmplName: 'แม่แบบเกียรติบัตร Medical Suction Trainer'
+  },
+  'suction-clin': {
+    name: 'Medical Suction Clinical Use', kind: 'clinical',
+    crit: { readLessons: 9, simPct: 80, quizPct: 80 },   // read:<บท> บันทึกเมื่อผ่านท้ายบท 4/5
+    cert: {
+      org1: 'ศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์',
+      org2: '',
+      title: 'การใช้เครื่องดูดทางการแพทย์อย่างปลอดภัย (Medical Suction Clinical Use)',
+      subject: 'ของศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์',
+      signer: 'รศ.ดร.ณัฐดนัย สิงห์คลีวรรณ',
+      signerPos: 'ผู้จัดทำสื่อการเรียนรู้'
+    },
+    ref: 'SUC', tmplKey: 'TEMPLATE_ID_suction_clin', logSheet: 'เกียรติบัตร เครื่องดูดคลินิก', sumSheet: 'สรุป เครื่องดูดคลินิก',
+    folder: 'เกียรติบัตร Medical Suction Clinical', tmplName: 'แม่แบบเกียรติบัตร Medical Suction Clinical Use'
   },
   'pump-clin': {
     name: 'Infusion Pump Clinical Use', kind: 'clinical',
@@ -541,6 +556,10 @@ function onOpen() {
       .addItem('1) สร้างแม่แบบเกียรติบัตร (ครั้งแรกครั้งเดียว)', 'makeTemplateSuction')
       .addItem('2) สรุปผลผ่านเกณฑ์', 'evaluateSuction')
       .addItem('3) ออกเกียรติบัตรให้ผู้ผ่านเกณฑ์', 'createCertificatesSuction'))
+    .addSubMenu(ui.createMenu('เครื่องดูด วิชาคลินิก')
+      .addItem('1) สร้างแม่แบบเกียรติบัตร (ครั้งแรกครั้งเดียว)', 'makeTemplateSuctionClin')
+      .addItem('2) สรุปผลผ่านเกณฑ์', 'evaluateSuctionClin')
+      .addItem('3) ออกเกียรติบัตรให้ผู้ผ่านเกณฑ์', 'createCertificatesSuctionClin'))
     .addToUi();
 }
 
@@ -665,6 +684,9 @@ function createCertificatesO2Clin() { createCertificates_('o2-clin'); }
 function makeTemplateSuction() { makeTemplate_('suction'); }
 function evaluateSuction() { evaluate_('suction'); }
 function createCertificatesSuction() { createCertificates_('suction'); }
+function makeTemplateSuctionClin() { makeTemplate_('suction-clin'); }
+function evaluateSuctionClin() { evaluate_('suction-clin'); }
+function createCertificatesSuctionClin() { createCertificates_('suction-clin'); }
 
 /* สร้างแม่แบบใน Google Slides (อาจารย์เปิดไปเพิ่มโลโก้และลายเซ็นได้) */
 function makeTemplate_(app) {
