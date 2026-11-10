@@ -6,6 +6,7 @@
    o2 = Oxygen Concentrator Repair Trainer (เกณฑ์แบบ kind 'o2': ด่านความปลอดภัย + ท้ายบท 7 โมดูล + โจทย์ซ่อม 10 เคส + คะแนนรวม),
    suction = Medical Suction Repair Trainer (เกณฑ์แบบ kind 'repair' 10 เคส · สอบท้ายโมดูล 4 ด่านความปลอดภัยต้องได้ 100%),
    suction-clin = วิชาคลินิก การใช้เครื่องดูดทางการแพทย์อย่างปลอดภัย
+   warmer = Infant Radiant Warmer Repair Trainer (เกณฑ์แบบ kind 'repair' 10 เคส · สอบท้ายโมดูล 4 ด่านความปลอดภัยต้องได้ 100%)
    1) สมัคร / เข้าสู่ระบบ / เปลี่ยนรหัสผ่าน ทำที่เว็บหลัก (stdsk99/medtechcenter) ที่เดียว
       แอปฝึกซ่อมรับ "บัตรผ่าน" (session token) จากเว็บหลัก แล้วใช้ส่งคะแนน
    2) เมนู "ผู้ใช้" ใน Google Sheets: ดูข้อมูล รีเซ็ตรหัสผ่าน ระงับบัญชี ยกเลิกการลงทะเบียน (ไม่มีการลบผู้ใช้)
@@ -127,6 +128,20 @@ const APPS = {
     },
     ref: 'SUT', tmplKey: 'TEMPLATE_ID_suction', logSheet: 'เกียรติบัตร เครื่องดูด', sumSheet: 'สรุป เครื่องดูด',
     folder: 'เกียรติบัตร Medical Suction', tmplName: 'แม่แบบเกียรติบัตร Medical Suction Trainer'
+  },
+  warmer: {
+    name: 'Infant Radiant Warmer Repair Trainer', kind: 'repair', clinLabel: 'การใช้งานสำหรับช่าง',
+    crit: { learnCases: 10, examCases: 10, examAvg: 70, quizPct: 80, orderTasks: 3, clinSimPct: 80, acceptPct: 80, pmPct: 80, modTests: 8, mqPass: { 'mq:safety': 100 } },   // เหมือนวิชาเครื่องดูด
+    cert: {
+      org1: 'ศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์',
+      org2: '',
+      title: 'การฝึกซ่อมและบำรุงรักษาเครื่องอุ่นทารกแบบแผ่รังสี (Infant Radiant Warmer)',
+      subject: 'ของศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์',
+      signer: 'รศ.ดร.ณัฐดนัย สิงห์คลีวรรณ',
+      signerPos: 'ผู้จัดทำสื่อการเรียนรู้'
+    },
+    ref: 'IWT', tmplKey: 'TEMPLATE_ID_warmer', logSheet: 'เกียรติบัตร เครื่องอุ่นทารก', sumSheet: 'สรุป เครื่องอุ่นทารก',
+    folder: 'เกียรติบัตร Infant Radiant Warmer', tmplName: 'แม่แบบเกียรติบัตร Infant Radiant Warmer Trainer'
   },
   'suction-clin': {
     name: 'Medical Suction Clinical Use', kind: 'clinical',
@@ -561,6 +576,10 @@ function onOpen() {
       .addItem('1) สร้างแม่แบบเกียรติบัตร (ครั้งแรกครั้งเดียว)', 'makeTemplateSuctionClin')
       .addItem('2) สรุปผลผ่านเกณฑ์', 'evaluateSuctionClin')
       .addItem('3) ออกเกียรติบัตรให้ผู้ผ่านเกณฑ์', 'createCertificatesSuctionClin'))
+    .addSubMenu(ui.createMenu('เครื่องอุ่นทารก (Infant Radiant Warmer)')
+      .addItem('1) สร้างแม่แบบเกียรติบัตร (ครั้งแรกครั้งเดียว)', 'makeTemplateWarmer')
+      .addItem('2) สรุปผลผ่านเกณฑ์', 'evaluateWarmer')
+      .addItem('3) ออกเกียรติบัตรให้ผู้ผ่านเกณฑ์', 'createCertificatesWarmer'))
     .addToUi();
 }
 
@@ -688,6 +707,9 @@ function createCertificatesSuction() { createCertificates_('suction'); }
 function makeTemplateSuctionClin() { makeTemplate_('suction-clin'); }
 function evaluateSuctionClin() { evaluate_('suction-clin'); }
 function createCertificatesSuctionClin() { createCertificates_('suction-clin'); }
+function makeTemplateWarmer() { makeTemplate_('warmer'); }
+function evaluateWarmer() { evaluate_('warmer'); }
+function createCertificatesWarmer() { createCertificates_('warmer'); }
 
 /* สร้างแม่แบบใน Google Slides (อาจารย์เปิดไปเพิ่มโลโก้และลายเซ็นได้) */
 function makeTemplate_(app) {
