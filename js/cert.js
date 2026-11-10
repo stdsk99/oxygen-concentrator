@@ -50,15 +50,12 @@
     t("ขอรับรองว่า",410,32,400,mut);
     t(p.name,500,64,600,ink);
     x.strokeStyle=gold;x.lineWidth=2;x.beginPath();x.moveTo(W/2-420,528);x.lineTo(W/2+420,528);x.stroke();
-    t(window.Score.idLine(p),578,28,400,mut);
     x.font=`500 34px ${F}`; const lines=wrap(x,`ได้ผ่าน${CE.title||""}`,W-360);
-    lines.forEach((l,i)=>t(l,660+i*50,34,500,ink));
-    let y=660+lines.length*50+6;
-    t(`${CE.subject||""} ตามเกณฑ์ที่กำหนดครบทุกข้อ`,y,30,400,ink); y+=100;
-    const line = pr.line || `โหมดเรียนรู้ ${pr.learn} เคส · สอบเฉลี่ย ${pr.avg} · แบบทดสอบ ${pr.quiz}% · ลำดับขั้นตอน ${pr.order} งาน${CR.clinSimPct?` · ใช้งานสำหรับช่าง ${pr.clin}%`:""}${CR.acceptPct?` · ตรวจรับ ${pr.acc}%`:""}${CR.pmPct?` · PM ${pr.pm}%`:""}`;
-    t(line,y,line.length>110?18:line.length>90?20:24,400,mut); y+=110;
+    lines.forEach((l,i)=>t(l,640+i*50,34,500,ink));
+    let y=640+lines.length*50+6;
+    t(`${CE.subject||""} ตามเกณฑ์ที่กำหนดครบทุกข้อ`,y,30,400,ink); y+=170;
     const d=new Date(); t(`ให้ไว้ ณ วันที่ ${thDate(d)}`,y,34,500,ink);
-    const rid=p.type==="gp"?("G"+[...p.sid].reduce((h,c)=>(h*31+c.charCodeAt(0))>>>0,7).toString(36).toUpperCase().slice(0,6)):p.sid;
+    const rid=(p.type==="gp"?"G":"S")+[...String(p.sid)].reduce((h,c)=>(h*31+c.charCodeAt(0))>>>0,7).toString(36).toUpperCase().slice(0,6);   // ไม่แสดงรหัสนักศึกษาบนใบรับรอง
     const ref=`${CE.ref||"IIT"}-${rid}-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,"0")}${String(d.getDate()).padStart(2,"0")}`;
     t(`ออกโดยระบบอัตโนมัติ ${C.appName||"Infant Incubator Repair Trainer"} · ไม่ใช่เอกสารทางการ · รหัสอ้างอิง ${ref}`,H-110,20,400,mut);
     return cv;
@@ -79,7 +76,7 @@
       const cv=await draw(profile, pr), url=cv.toDataURL("image/png");
       const out=box.querySelector("#ct-out");
       out.innerHTML=`<img class="certimg" id="certimg" alt="ใบรับรองการผ่านการฝึกของ ${esc(profile.name)}" src="${url}">
-        <div class="tools"><a class="btn primary" id="ct-dl" href="${url}" download="ใบรับรอง-${esc(profile.sid)}.png">ดาวน์โหลดภาพ</a><button id="ct-pr">พิมพ์ / บันทึก PDF</button></div>
+        <div class="tools"><a class="btn primary" id="ct-dl" href="${url}" download="ใบรับรอง-${esc(C.appName||CE.ref||"course")}.png">ดาวน์โหลดภาพ</a><button id="ct-pr">พิมพ์ / บันทึก PDF</button></div>
         <p class="muted small">บนมือถือ กดค้างที่ภาพแล้วเลือกบันทึกภาพได้</p>`;
       out.querySelector("#ct-pr").onclick=()=>{ try{ window.print(); }catch(e){} };
       go.disabled=false; go.textContent="สร้างใหม่";

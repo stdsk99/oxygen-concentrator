@@ -706,14 +706,13 @@ function makeTemplate_(app) {
   r1.getFill().setTransparent(); r1.getBorder().setWeight(5).getLineFill().setSolidFill('#0f7a6c');
   const r2 = s.insertShape(SlidesApp.ShapeType.RECTANGLE, 24, 24, W - 48, H - 48);
   r2.getFill().setTransparent(); r2.getBorder().setWeight(1.5).getLineFill().setSolidFill('#b8892b');
+  // ไม่แสดงรหัสนักศึกษาและคะแนนรายโมดูลบนเกียรติบัตร (แม่แบบเดิมที่มี {{idline}} {{scores}} ยังใช้ได้ ระบบแทนเป็นค่าว่าง)
   box([CERT.org1, CERT.org2].filter(String).join('\n'), 34, 44, 13, false, '#5d6675');
-  box('เกียรติบัตร', 80, 46, 34, true, '#0f7a6c');
-  box('ขอมอบเกียรติบัตรฉบับนี้ไว้เพื่อแสดงว่า', 128, 22, 13, false, '#5d6675');
-  box('{{name}}', 150, 36, 26, true);
-  box('{{idline}}', 188, 20, 12, false, '#5d6675');
-  box('ได้ผ่าน' + CERT.title + '\n' + CERT.subject + ' ตามเกณฑ์ที่กำหนดครบทุกข้อ', 212, 44, 14);
-  box('{{scores}}', 258, 20, 10, false, '#5d6675');
-  box('ให้ไว้ ณ วันที่ {{date}}', 280, 22, 13);
+  box('เกียรติบัตร', 78, 46, 34, true, '#0f7a6c');
+  box('ขอมอบเกียรติบัตรฉบับนี้ไว้เพื่อแสดงว่า', 134, 22, 13, false, '#5d6675');
+  box('{{name}}', 160, 38, 26, true);
+  box('ได้ผ่าน' + CERT.title + '\n' + CERT.subject + ' ตามเกณฑ์ที่กำหนดครบทุกข้อ', 210, 44, 14);
+  box('ให้ไว้ ณ วันที่ {{date}}', 264, 22, 13);
   box('………………………………………\n(' + CERT.signer + ')\n' + CERT.signerPos, 300, 56, 12);
   box('เลขที่ {{ref}}', H - 34, 14, 8, false, '#5d6675');
   PropertiesService.getScriptProperties().setProperty(A.tmplKey, p.getId());
@@ -784,13 +783,12 @@ function createCertificates_(app) {
     const ref = A.ref + '-' + (now.getFullYear() + 543) + '-' + String(n).padStart(3, '0');
     const copy = DriveApp.getFileById(tid).makeCopy('tmp ' + p.sid, folder);
     const pres = SlidesApp.openById(copy.getId());
-    const isGp = String(p.type || '').indexOf('บุคลากร') === 0;
     pres.replaceAllText('{{name}}', p.name);
-    pres.replaceAllText('{{idline}}', isGp ? 'หน่วยงาน ' + (p.org || '-') : 'รหัสนักศึกษา ' + p.sid);
-    pres.replaceAllText('{{sid}}', p.sid);
+    pres.replaceAllText('{{idline}}', '');   // แม่แบบเดิม: เว้นว่าง ไม่แสดงรหัสนักศึกษา/หน่วยงาน
+    pres.replaceAllText('{{sid}}', '');
     pres.replaceAllText('{{date}}', thaiDate_(now));
     pres.replaceAllText('{{ref}}', ref);
-    pres.replaceAllText('{{scores}}', p.ev.line);
+    pres.replaceAllText('{{scores}}', '');   // แม่แบบเดิม: เว้นว่าง ไม่แสดงคะแนนรายโมดูล
     pres.saveAndClose();
     const pdf = folder.createFile(copy.getAs('application/pdf')).setName('เกียรติบัตร-' + p.sid + '-' + p.name + '.pdf');
     copy.setTrashed(true);
