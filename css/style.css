@@ -632,3 +632,4 @@ details.lsec-d>summary::before{content:"▸";color:var(--accent);font-weight:700
 details.lsec-d[open]>summary::before{transform:rotate(90deg)}
 details.lsec-d>summary>h3,details.lsec-d>summary>h2{margin:0;flex:1}
 details.lsec-d[open]{padding-bottom:10px}
+details.lsec-d>summary>h3.lsec{border-top:0;padding-top:0;margin:0;font-size:17px}
