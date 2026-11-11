@@ -7,6 +7,7 @@
    suction = Medical Suction Repair Trainer (เกณฑ์แบบ kind 'repair' 10 เคส · สอบท้ายโมดูล 4 ด่านความปลอดภัยต้องได้ 100%),
    suction-clin = วิชาคลินิก การใช้เครื่องดูดทางการแพทย์อย่างปลอดภัย
    warmer = Infant Radiant Warmer Repair Trainer (เกณฑ์แบบ kind 'repair' 10 เคส · สอบท้ายโมดูล 4 ด่านความปลอดภัยต้องได้ 100%)
+   warmer-clin = วิชาคลินิก การใช้เครื่องอุ่นทารกและเครื่องส่องไฟอย่างปลอดภัยในทารกแรกเกิด
    photo = Phototherapy Repair Trainer (เกณฑ์แบบ kind 'repair' 6 เคส 6 โมดูล · สอบท้ายโมดูล 3 ด่านความปลอดภัยต้องได้ 100%)
    1) สมัคร / เข้าสู่ระบบ / เปลี่ยนรหัสผ่าน ทำที่เว็บหลัก (stdsk99/medtechcenter) ที่เดียว
       แอปฝึกซ่อมรับ "บัตรผ่าน" (session token) จากเว็บหลัก แล้วใช้ส่งคะแนน
@@ -157,6 +158,20 @@ const APPS = {
     },
     ref: 'PHT', tmplKey: 'TEMPLATE_ID_photo', logSheet: 'เกียรติบัตร เครื่องส่องไฟ', sumSheet: 'สรุป เครื่องส่องไฟ',
     folder: 'เกียรติบัตร Phototherapy', tmplName: 'แม่แบบเกียรติบัตร Phototherapy Trainer'
+  },
+  'warmer-clin': {
+    name: 'Neonatal Warmer & Phototherapy Clinical Use', kind: 'clinical',
+    crit: { readLessons: 10, simPct: 80, quizPct: 80 },   // read:<บท> บันทึกเมื่อผ่านท้ายบท 4/5
+    cert: {
+      org1: 'ศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์',
+      org2: '',
+      title: 'การใช้เครื่องอุ่นทารกและเครื่องส่องไฟอย่างปลอดภัยในทารกแรกเกิด',
+      subject: 'ของศูนย์การเรียนรู้เทคโนโลยีทางการแพทย์',
+      signer: 'รศ.ดร.ณัฐดนัย สิงห์คลีวรรณ',
+      signerPos: 'ผู้จัดทำสื่อการเรียนรู้'
+    },
+    ref: 'IWC', tmplKey: 'TEMPLATE_ID_warmer_clin', logSheet: 'เกียรติบัตร อุ่นทารกและส่องไฟคลินิก', sumSheet: 'สรุป อุ่นทารกและส่องไฟคลินิก',
+    folder: 'เกียรติบัตร Neonatal Warmer & Phototherapy Clinical', tmplName: 'แม่แบบเกียรติบัตร Neonatal Warmer & Phototherapy Clinical Use'
   },
   'suction-clin': {
     name: 'Medical Suction Clinical Use', kind: 'clinical',
@@ -599,6 +614,10 @@ function onOpen() {
       .addItem('1) สร้างแม่แบบเกียรติบัตร (ครั้งแรกครั้งเดียว)', 'makeTemplatePhoto')
       .addItem('2) สรุปผลผ่านเกณฑ์', 'evaluatePhoto')
       .addItem('3) ออกเกียรติบัตรให้ผู้ผ่านเกณฑ์', 'createCertificatesPhoto'))
+    .addSubMenu(ui.createMenu('อุ่นทารกและส่องไฟ คลินิก')
+      .addItem('1) สร้างแม่แบบเกียรติบัตร (ครั้งแรกครั้งเดียว)', 'makeTemplateWarmerClin')
+      .addItem('2) สรุปผลผ่านเกณฑ์', 'evaluateWarmerClin')
+      .addItem('3) ออกเกียรติบัตรให้ผู้ผ่านเกณฑ์', 'createCertificatesWarmerClin'))
     .addToUi();
 }
 
@@ -732,6 +751,9 @@ function createCertificatesWarmer() { createCertificates_('warmer'); }
 function makeTemplatePhoto() { makeTemplate_('photo'); }
 function evaluatePhoto() { evaluate_('photo'); }
 function createCertificatesPhoto() { createCertificates_('photo'); }
+function makeTemplateWarmerClin() { makeTemplate_('warmer-clin'); }
+function evaluateWarmerClin() { evaluate_('warmer-clin'); }
+function createCertificatesWarmerClin() { createCertificates_('warmer-clin'); }
 
 /* สร้างแม่แบบใน Google Slides (อาจารย์เปิดไปเพิ่มโลโก้และลายเซ็นได้) */
 function makeTemplate_(app) {
