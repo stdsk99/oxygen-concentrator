@@ -150,3 +150,14 @@ span.led.slow{animation:blink 2s steps(2) infinite}span.led.code{animation:blink
 @media print{header,nav,.tools,.note{display:none}}
 nav a.lk{opacity:.5}
 nav a.lk::after{content:" 🔒";font-size:11px}
+/* หัวข้อแบบแตะเปิด (ต้องเปิดอ่านครบก่อนทำแบบทดสอบ · js/seen.js) */
+details.sec>summary{cursor:pointer;display:flex;align-items:baseline;gap:8px;list-style:none}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::before{content:"▸";color:var(--accent);font-weight:700;transition:transform .15s}
+details.sec[open]>summary::before{transform:rotate(90deg)}
+details.sec>summary h2{margin:8px 0;flex:1}
+details.rule{display:block}
+details.rule>summary{display:flex;gap:12px;align-items:center;cursor:pointer;list-style:none}
+details.rule>summary::-webkit-details-marker{display:none}
+details.rule>summary b{flex:1}
+details.rule>p{margin:8px 0 0 36px}

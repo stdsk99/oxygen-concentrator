@@ -15,6 +15,12 @@
   const passed = id => { if(id==="safety") return safetyOK(); const b=best("mq:"+id); return !!(b && b.v>=PASS-1e-9); };
   const blocker = id => { const i=SEQ.indexOf(id); for(let k=0;k<i;k++) if(!passed(SEQ[k])) return SEQ[k]; return null; };
   const isLocked = id => !window.PREVIEW && SEQ.includes(id) && !!blocker(id);
+  /* ต้องเปิดอ่านทุกหัวข้อก่อนเริ่มแบบทดสอบท้ายบท (js/seen.js) · โมดูลจำลองการซ่อมไม่นับ */
+  if(window.Seen){
+    const goSec=(v,el)=>{ if(location.hash!=="#"+v) location.hash="#"+v; setTimeout(()=>{ const d=document.getElementById(el); if(d){ if(d.tagName==="DETAILS") d.open=true; d.scrollIntoView({behavior:"smooth",block:"start"}); } },80); };
+    MODS.filter(m=>!m.sim && m.sections).forEach(m=>Seen.define(m.id, ()=>m.sections.map((s,i)=>({id:"s"+i, n:s.h})), id=>goSec(m.id, m.id+"-"+id), ()=>passed(m.id)));
+    if(SAF && SAF.rules) Seen.define("safety", ()=>SAF.rules.map((r,i)=>({id:"r"+i, n:r[1]})), id=>goSec("safety", "saf-"+id), ()=>safetyOK());
+  }
   const nextOf = id => { const i=SEQ.indexOf(id); return i>=0 && i<SEQ.length-1 ? SEQ[i+1] : null; };
 
   /* ---------- เกณฑ์ผ่าน (ใช้แทนเกณฑ์เดิมใน cert.js) ---------- */
@@ -40,6 +46,8 @@
   /* ---------- แบบทดสอบ (ใช้ทั้งด่านความปลอดภัยและท้ายบท) ---------- */
   function quiz(root, o){   // o: {bank, n, key, mod, item, pass, title, onDone}
     function intro(){
+      const sn=(o.scope && window.Seen)?Seen.status(o.scope):{ok:true};
+      if(!sn.ok){ root.innerHTML=`<div class="qbox"><h2>${esc(o.title)}</h2>${Seen.gateHTML(o.scope)}</div>`; return; }
       const b=best(o.key);
       root.innerHTML=`<div class="qbox"><h2>${esc(o.title)}</h2>
         <p class="muted small">สุ่ม ${Math.min(o.n,o.bank.length)} ข้อจากคลัง ${o.bank.length} ข้อ ต้องถูก ${o.pass} ข้อขึ้นไปจึงผ่าน${o.unlock?` และเปิด${esc(o.unlock)}`:""} · ตอบผิดทำใหม่ได้ ระบบสุ่มชุดใหม่ทุกครั้ง</p>
@@ -87,6 +95,7 @@
       root.scrollIntoView({block:"start"});
       if(o.onDone) o.onDone(passed);
     }
+    if(o.scope) document.addEventListener("seen-change", e=>{ if(e.detail && e.detail.scope===o.scope && root.querySelector(".seen-gate")) intro(); });
     intro();
   }
 
@@ -95,9 +104,10 @@
     const root=document.getElementById("safety-root");
     root.innerHTML=`<h1>ด่านความปลอดภัย</h1><p class="muted">${esc(SAF.intro)}</p>
       ${safetyOK()?`<div class="msg ok">✓ ผ่านด่านความปลอดภัยแล้ว เข้าโมดูล 6 ได้</div>`:""}
-      <div class="rules">${SAF.rules.map(r=>`<div class="rule"><span class="ri">${r[0]}</span><div><b>${esc(r[1])}</b><p>${esc(r[2])}</p></div></div>`).join("")}</div>
+      <p class="small muted">แตะแต่ละข้อเพื่ออ่านรายละเอียด ต้องเปิดอ่านครบทุกข้อจึงจะเริ่มทำแบบทดสอบได้</p>
+      <div class="rules">${SAF.rules.map((r,i)=>`<details class="rule" id="saf-r${i}" data-seen="safety|r${i}"><summary><span class="ri">${r[0]}</span><b>${esc(r[1])}</b></summary><p>${esc(r[2])}</p></details>`).join("")}</div>
       <div id="saf-q"></div>`;
-    quiz(root.querySelector("#saf-q"), {bank:SAF.quiz, n:5, key:"safety", mod:"0-ด่านความปลอดภัย", item:"ด่านความปลอดภัย", pass:CR.safety, unlock:"โมดูล 6", title:"แบบทดสอบด่านความปลอดภัย",
+    quiz(root.querySelector("#saf-q"), {scope:"safety", bank:SAF.quiz, n:5, key:"safety", mod:"0-ด่านความปลอดภัย", item:"ด่านความปลอดภัย", pass:CR.safety, unlock:"โมดูล 6", title:"แบบทดสอบด่านความปลอดภัย",
       next:["#m6","ไปโมดูล 6 →"], onDone:()=>{ refreshHome(); navLocks(); }});
   }
 
@@ -110,11 +120,12 @@
     const nxId=nextOf(m.id);
     root.innerHTML=`<div class="kicker">โมดูล ${m.no} · ${esc(m.en)}</div><h1>${esc(m.n)}</h1><p class="muted">${esc(m.intro)}</p>
       <div class="toc">${m.sections.map((s,i)=>`<a href="#${m.id}" data-sec="${i}">${esc(s.h)}</a>`).join("")}<a href="#${m.id}" data-sec="q">แบบทดสอบท้ายบท</a></div>
-      ${m.sections.map((s,i)=>`<section class="sec" id="${m.id}-s${i}"><h2>${esc(s.h)}</h2>${s.b}${s.w?`<div class="wgt" data-w="${s.w}"></div>`:""}</section>`).join("")}
+      <p class="small muted">แตะหัวข้อเพื่อเปิดอ่าน ต้องเปิดอ่านครบทุกหัวข้อจึงจะเริ่มทำแบบทดสอบท้ายบทได้</p>
+      ${m.sections.map((s,i)=>`<details class="sec" id="${m.id}-s${i}" data-seen="${m.id}|s${i}"${i===0?" open":""}><summary><h2>${esc(s.h)}</h2></summary>${s.b}${s.w?`<div class="wgt" data-w="${s.w}"></div>`:""}</details>`).join("")}
       <section class="sec" id="${m.id}-sq"><div id="${m.id}-quiz"></div></section>`;
-    root.querySelectorAll("[data-sec]").forEach(a=>a.onclick=e=>{e.preventDefault();const el=document.getElementById(m.id+"-s"+a.dataset.sec);if(el)el.scrollIntoView({behavior:"smooth",block:"start"});});
+    root.querySelectorAll("[data-sec]").forEach(a=>a.onclick=e=>{e.preventDefault();const el=document.getElementById(m.id+"-s"+a.dataset.sec);if(el&&el.tagName==="DETAILS")el.open=true;if(el)el.scrollIntoView({behavior:"smooth",block:"start"});});
     root.querySelectorAll(".wgt").forEach(w=>{ const f=window.Widgets&&window.Widgets[w.dataset.w]; if(f) f(w); });
-    quiz(document.getElementById(m.id+"-quiz"), {bank:m.quiz, n:m.perTest, key:"mq:"+m.id, mod:`${m.no}-${m.n}`, item:`ท้ายบทโมดูล ${m.no} ${m.n}`, title:`แบบทดสอบท้ายบท โมดูล ${m.no}`,
+    quiz(document.getElementById(m.id+"-quiz"), {scope:m.id, bank:m.quiz, n:m.perTest, key:"mq:"+m.id, mod:`${m.no}-${m.n}`, item:`ท้ายบทโมดูล ${m.no} ${m.n}`, title:`แบบทดสอบท้ายบท โมดูล ${m.no}`,
       pass:Math.ceil(m.perTest*PASS), unlock:label(nxId),
       next: ["#"+nxId, `ไป${label(nxId)} →`], onDone:()=>{ refreshHome(); navLocks(); }});
   }

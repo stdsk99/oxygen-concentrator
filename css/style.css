@@ -613,3 +613,22 @@ body.locked{overflow:hidden}
 .ov-3d small{grid-column:1;font-weight:400;opacity:.9}
 .ov-3d span{grid-row:1/3;grid-column:2;font-size:22px}
 .ov-3d:hover{filter:brightness(1.08)}
+
+/* ===== ต้องเปิดดูเนื้อหาครบก่อนทำแบบทดสอบ (js/seen.js) ===== */
+.seen-gate{border:1px dashed var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;background:var(--bg)}
+.seen-gate p{margin:4px 0}
+.seen-bar{height:8px;border-radius:6px;background:var(--line);overflow:hidden;margin:8px 0}
+.seen-bar i{display:block;height:100%;background:var(--accent)}
+.seen-miss{display:flex;flex-wrap:wrap;gap:6px}
+.seen-go{font-size:13px;padding:5px 10px;border-radius:999px}
+.seen-ok{position:relative}
+button.seen-ok::after,summary .seen-tick::after{content:" ✓";color:var(--accent);font-weight:700}
+details.seen-ok>summary::after{content:" ✓";color:var(--accent);font-weight:700}
+/* หัวข้อย่อยในบทเรียนแบบแตะเปิด (Seen.sectionize) */
+details.lsec-d{border:1px solid var(--line);border-radius:12px;margin:12px 0;padding:0 14px;background:var(--card)}
+details.lsec-d>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:10px 0}
+details.lsec-d>summary::-webkit-details-marker{display:none}
+details.lsec-d>summary::before{content:"▸";color:var(--accent);font-weight:700;transition:transform .15s}
+details.lsec-d[open]>summary::before{transform:rotate(90deg)}
+details.lsec-d>summary>h3,details.lsec-d>summary>h2{margin:0;flex:1}
+details.lsec-d[open]{padding-bottom:10px}

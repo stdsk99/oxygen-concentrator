@@ -32,7 +32,10 @@
 
   /* ---------- แบบทดสอบ (ใช้ทั้งท้ายบทและท้ายวิชา) ---------- */
   function quiz(root, o){   // {bank, n, pass, key, mod, item, title, onPass, next}
-    const intro=()=>{ const b=best(o.key);
+    const intro=()=>{
+      const sn=(o.scope && window.Seen)?Seen.status(o.scope):{ok:true};
+      if(!sn.ok){ root.innerHTML=`<div class="qbox"><h2>${esc(o.title)}</h2>${Seen.gateHTML(o.scope)}</div>`; return; }
+      const b=best(o.key);
       root.innerHTML=`<div class="qbox"><h2>${esc(o.title)}</h2><p class="muted small">สุ่ม ${Math.min(o.n,o.bank.length)} ข้อจากคลัง ${o.bank.length} ข้อ ต้องถูก ${o.pass} ข้อขึ้นไปจึงผ่าน ตอบผิดทำใหม่ได้ ระบบสุ่มชุดใหม่ทุกครั้ง</p>
         ${b?`<p class="hint">ดีที่สุดของคุณ: ${b.score}/${b.max}</p>`:""}<div class="tools"><button class="primary" data-go>${b?"ทำอีกครั้ง":"เริ่มทำแบบทดสอบ"}</button></div></div>`;
       root.querySelector("[data-go]").onclick=start; };
@@ -65,6 +68,7 @@
         <div class="tools">${pass&&o.next?`<a class="btn primary" href="${o.next[0]}">ไป${esc(o.next[1])} →</a><button data-r>ทำชุดใหม่</button>`:`<button class="primary" data-r>ทำชุดใหม่</button>`}</div></div>`;
       root.querySelector("[data-r]").onclick=start; root.scrollIntoView({block:"start"});
     }
+    if(o.scope) document.addEventListener("seen-change", e=>{ if(e.detail && e.detail.scope===o.scope && root.isConnected && root.querySelector(".seen-gate")) intro(); });
     intro();
   }
 
@@ -89,8 +93,15 @@
       <article class="lesson"><h1>บทที่ ${i+1} · ${esc(x.n)}</h1>${x.b}
       <div class="srcs"><b>แหล่งอ้างอิง</b><ol>${x.src.map(s=>`<li>${s[1]?`<a href="${esc(s[1])}" target="_blank" rel="noopener">${esc(s[0])}</a>`:esc(s[0])}</li>`).join("")}</ol></div></article>
       <div id="lq"></div>`;
+    /* หัวข้อย่อยเป็นกล่องแตะเปิด ต้องเปิดครบก่อนทำสอบท้ายบท (../js/seen.js) · ผ่านบทนี้แล้วไม่ล็อกย้อนหลัง */
+    if(window.Seen){
+      const art=root.querySelector("article.lesson"), ns=Seen.sectionize(art, x.id);
+      /* บทที่ไม่มีหัวข้อย่อย: กด "อ่านจบแล้ว" ท้ายบทแทน */
+      if(!ns) art.querySelector(".srcs").insertAdjacentHTML("beforebegin", `<div class="tools" data-nosec><button class="primary" data-seen="${esc(x.id)}|read">อ่านจบแล้ว</button></div>`);
+      Seen.define(x.id, ()=>Seen.fromDom(x.id), id=>{ const el=root.querySelector(`[data-seen="${x.id}|${id}"]`); if(el){ if(el.tagName==="DETAILS") el.open=true; el.scrollIntoView({behavior:"smooth",block:"center"}); } }, ()=>has("read:"+x.id));
+    }
     root.querySelectorAll("[data-w]").forEach(w=>{ const f=window.Widgets&&window.Widgets[w.dataset.w]; if(f) f(w); });
-    quiz(root.querySelector("#lq"), {bank:x.quiz, n:5, pass:NEED, key:"lq:"+x.id, mod:"บทเรียน", item:`ท้ายบทที่ ${i+1} ${x.n}`, title:`แบบทดสอบท้ายบทที่ ${i+1}`,
+    quiz(root.querySelector("#lq"), {scope:x.id, bank:x.quiz, n:5, pass:NEED, key:"lq:"+x.id, mod:"บทเรียน", item:`ท้ายบทที่ ${i+1} ${x.n}`, title:`แบบทดสอบท้ายบทที่ ${i+1}`,
       onPass: async()=>{ if(!has("read:"+x.id) && S()) await S().record({key:"read:"+x.id, mod:"บทเรียน", item:`ผ่านบทที่ ${i+1} ${x.n}`, score:1, max:1}); },
       next: nx ? ["#"+nx.id, `บทที่ ${i+2}`] : ["#sim","เครื่องจำลอง"]});
   }
