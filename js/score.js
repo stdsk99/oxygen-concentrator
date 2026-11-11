@@ -71,6 +71,7 @@
     if(!sess){ toast("กรุณาเข้าสู่ระบบก่อน คะแนนจึงจะถูกบันทึก"); return; }
     const p=sess.profile;
     const rec={t:new Date().toISOString(), sid:p.sid, key:r.key||"", mod:r.mod, item:r.item, score:r.score, max:r.max, detail:r.detail||""};
+    if(r.q) rec.q=String(r.q);   // รหัสข้อสอบที่ได้ ใช้สุ่มไม่ซ้ำข้ามเครื่อง (js/qpick.js)
     rec.st = await sendRec(rec);
     hist.unshift(rec); hist=hist.slice(0,500); save(PREVIEW?K_HP:K_H,hist);
     if(!r.quiet) toast(rec.st==="sent"?"บันทึกคะแนนเข้าระบบแล้ว":rec.st==="fail"?"ส่งคะแนนไม่สำเร็จ จะส่งให้อีกครั้งเมื่อเข้าสู่ระบบครั้งถัดไป":rec.st==="rejected"?"ระบบไม่รับคะแนน กรุณาออกจากระบบแล้วเข้าใหม่":(PREVIEW?"โหมดดูตัวอย่าง: เก็บไว้ในเครื่องนี้ ไม่ส่งเข้าระบบ":"บันทึกคะแนนไว้ในเครื่องแล้ว"));
@@ -111,6 +112,6 @@
     };
   }
 
-  window.Score={record, show, idLine, api, toast, profile, session:()=>sess, setSession, logout, endSession, bestOf, has};
+  window.Score={record, show, idLine, api, toast, profile, session:()=>sess, setSession, logout, endSession, bestOf, has, hist:()=>hist};
   window.Views=window.Views||{}; window.Views.scores={show};
 })();

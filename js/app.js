@@ -56,7 +56,7 @@
       root.querySelector("[data-go]").onclick=start;
     }
     function start(){
-      const qs=shuffle(o.bank).slice(0,Math.min(o.n,o.bank.length)).map(b=>{const ord=shuffle(b.o.map((t,k)=>k));return {...b,ord,ans:ord.indexOf(0),pick:null};});
+      const qs=(window.QPick?QPick.pick(o.key,o.bank,o.n):shuffle(o.bank).slice(0,Math.min(o.n,o.bank.length))).map(b=>{const ord=shuffle(b.o.map((t,k)=>k));return {...b,ord,ans:ord.indexOf(0),pick:null};});
       let i=0;
       function draw(){
         const q=qs[i], done=qs.filter(x=>x.pick!==null).length;
@@ -82,7 +82,7 @@
     }
     function result(qs){
       const ok=qs.filter(q=>q.pick===q.ans).length, n=qs.length, pct=Math.round(ok/n*100);
-      S() && S().record({key:o.key, mod:o.mod, item:o.item, score:ok, max:n});
+      S() && S().record({key:o.key, mod:o.mod, item:o.item, score:ok, max:n, q:window.QPick?QPick.ids(qs):""});
       const passed = ok>=o.pass;
       root.innerHTML=`<div class="qbox"><h2>ผล${esc(o.title)}</h2>
         <div class="score ${passed?"ok":pct>=60?"mid":"bad"}"><div class="big">${ok}/${n}</div><div>${pct}% · ${passed?"ผ่าน":"ยังไม่ผ่าน"}</div></div>

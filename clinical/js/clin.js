@@ -40,7 +40,7 @@
         ${b?`<p class="hint">ดีที่สุดของคุณ: ${b.score}/${b.max}</p>`:""}<div class="tools"><button class="primary" data-go>${b?"ทำอีกครั้ง":"เริ่มทำแบบทดสอบ"}</button></div></div>`;
       root.querySelector("[data-go]").onclick=start; };
     function start(){
-      const qs=shuffle(o.bank).slice(0,Math.min(o.n,o.bank.length)).map(b=>{const ord=shuffle(b.o.map((t,k)=>k));return {...b,ord,ans:ord.indexOf(0),pick:null};});
+      const qs=(window.QPick?QPick.pick(o.key,o.bank,o.n):shuffle(o.bank).slice(0,Math.min(o.n,o.bank.length))).map(b=>{const ord=shuffle(b.o.map((t,k)=>k));return {...b,ord,ans:ord.indexOf(0),pick:null};});
       let i=0;
       const draw=()=>{ const q=qs[i], done=qs.filter(x=>x.pick!==null).length;
         root.innerHTML=`<div class="qbox"><div class="simhead"><span class="muted">${esc(o.title)} · ตอบแล้ว ${done}/${qs.length}</span><button class="ghost" data-x>ยกเลิก</button></div>
@@ -58,7 +58,7 @@
     }
     async function result(qs){
       const ok=qs.filter(q=>q.pick===q.ans).length, n=qs.length, pct=Math.round(ok/n*100), pass=ok>=o.pass;
-      S() && await S().record({key:o.key, mod:o.mod, item:o.item, score:ok, max:n});
+      S() && await S().record({key:o.key, mod:o.mod, item:o.item, score:ok, max:n, q:window.QPick?QPick.ids(qs):""});
       if(pass && o.onPass) await o.onPass();
       root.innerHTML=`<div class="qbox"><h2>ผล${esc(o.title)}</h2>
         <div class="score ${pass?"ok":pct>=60?"mid":"bad"}"><div class="big">${ok}/${n}</div><div>${pct}% · ${pass?"ผ่าน":"ยังไม่ผ่าน"}</div></div>

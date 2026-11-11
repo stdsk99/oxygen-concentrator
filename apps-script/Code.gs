@@ -27,7 +27,7 @@
 const TOKEN = 'pump-2569';          // รหัสระบุแอป (ไม่ใช่รหัสลับ) ต้องตรงกับ config ของเว็บหลักและทุกแอป
 const SHEET_NAME = 'scores';
 const USER_SHEET = 'users';
-const HEAD = ['เวลา', 'รหัสผู้ใช้', 'ชื่อ-สกุล', 'กลุ่ม', 'โมดูล', 'รายการ', 'คะแนน', 'เต็ม', 'ร้อยละ', 'รายละเอียด', 'key', 'ประเภทผู้เรียน', 'หน่วยงาน', 'แอป'];
+const HEAD = ['เวลา', 'รหัสผู้ใช้', 'ชื่อ-สกุล', 'กลุ่ม', 'โมดูล', 'รายการ', 'คะแนน', 'เต็ม', 'ร้อยละ', 'รายละเอียด', 'key', 'ประเภทผู้เรียน', 'หน่วยงาน', 'แอป', 'รหัสข้อสอบที่ได้'];
 const UHEAD = ['ลงทะเบียนเมื่อ', 'รหัสผู้ใช้', 'ชื่อ-สกุล', 'ประเภท', 'กลุ่ม', 'หน่วยงาน', 'ตำแหน่ง', 'รหัสผ่าน (เข้ารหัสแล้ว ห้ามแก้)', 'ยินยอม PDPA', 'เข้าสู่ระบบล่าสุด',
   'สถานะ', 'ต้องเปลี่ยนรหัสผ่าน', 'ใส่ผิดติดกัน', 'ล็อกถึง', 'รุ่นบัตรผ่าน'];
 const U = { sid: 2, name: 3, cred: 8, last: 10, status: 11, must: 12, fails: 13, lock: 14, ver: 15 };   // เลขคอลัมน์ในแท็บ users
@@ -373,11 +373,13 @@ function app_(u, d) {
   const hist = [];
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
   if (sh && sh.getLastRow() > 1) {
-    const w = Math.max(14, sh.getLastColumn());
+    const w = Math.min(15, Math.max(14, sh.getLastColumn()));
     sh.getRange(2, 2, sh.getLastRow() - 1, 1).createTextFinder(u.sid).matchEntireCell(true).findAll().forEach(c => {
-      const v = sh.getRange(c.getRow(), 1, 1, Math.min(w, 14)).getValues()[0];
+      const v = sh.getRange(c.getRow(), 1, 1, w).getValues()[0];
       if (appOf_(v[13]) !== app) return;
-      hist.push({ t: new Date(v[0]).toISOString(), sid: u.sid, mod: v[4], item: v[5], score: v[6], max: v[7], detail: v[9], key: v[10] });
+      const h = { t: new Date(v[0]).toISOString(), sid: u.sid, mod: v[4], item: v[5], score: v[6], max: v[7], detail: v[9], key: v[10] };
+      if (v[14]) h.q = String(v[14]);   // รหัสข้อสอบที่ได้ ใช้สุ่มข้อที่เห็นน้อยที่สุดก่อน (js/qpick.js)
+      hist.push(h);
     });
   }
   setU_(u, U.last, new Date());
@@ -391,7 +393,8 @@ function score_(u, d) {
   const pct = d.max ? Math.round(d.score / d.max * 100) : '';
   const isGp = u.type === 'gp';
   sh.appendRow([new Date(), u.sid, u.name, u.sec || '', d.mod || '', d.item || '', d.score, d.max, pct, d.detail || '', d.key || '',
-    isGp ? 'บุคลากร/บุคคลทั่วไป' : 'นักศึกษา', isGp ? [u.org, u.role].filter(String).join(' · ') : '', app]);
+    isGp ? 'บุคลากร/บุคคลทั่วไป' : 'นักศึกษา', isGp ? [u.org, u.role].filter(String).join(' · ') : '', app,
+    String(d.q || '').replace(/[^0-9a-z,]/g, '').slice(0, 2000)]);
   sh.getRange(sh.getLastRow(), 2).setNumberFormat('@').setValue(u.sid);
   return { ok: true };
 }
