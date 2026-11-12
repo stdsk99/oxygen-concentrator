@@ -3,6 +3,8 @@
    คะแนน: lq:<บท> ท้ายบท · read:<บท> เมื่อผ่านท้ายบท · csim เครื่องจำลอง · quiz แบบทดสอบท้ายวิชา */
 (function(){
   const C=window.APP_CONFIG||{}, CR=C.criteria||{}, L=window.CLESSONS, SIM=window.CSIM;
+  /* คลังข้อสอบเพิ่ม (data/qbank.js): ข้อท้ายบทเพิ่มรวมเข้ากับบท · คลังสอบท้ายวิชาแยก CFINAL */
+  if(window.QMORE) L.forEach(x=>{ if(QMORE[x.id]) x.quiz=x.quiz.concat(QMORE[x.id]); });
   const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
   const S=()=>window.Score;
@@ -155,7 +157,7 @@
   function finalQuiz(){
     const root=document.getElementById("quiz");
     if(lockedQuiz()){ root.innerHTML=`<h1>🔒 แบบทดสอบท้ายวิชา</h1><p class="muted">ต้องผ่านครบ 9 บทและเครื่องจำลองอย่างน้อย ${CR.simPct}% ก่อน</p><div class="tools"><a class="btn primary" href="${lockedSim()?"#lessons":"#sim"}">ไป${lockedSim()?"บทเรียน":"เครื่องจำลอง"} →</a></div>`; return; }
-    const bank=L.flatMap(x=>x.quiz), n=CR.finalN||20;
+    const bank=(window.CFINAL&&CFINAL.length)?CFINAL:L.flatMap(x=>x.quiz), n=CR.finalN||20;
     quiz(root, {bank, n, pass:Math.ceil(n*CR.quizPct/100), key:"quiz", mod:"แบบทดสอบ", item:`แบบทดสอบท้ายวิชา ${n} ข้อ`, title:"แบบทดสอบท้ายวิชา", next:["#scores","ผลของฉันและเกียรติบัตร"]});
   }
 
