@@ -161,3 +161,29 @@ details.rule>summary{display:flex;gap:12px;align-items:center;cursor:pointer;lis
 details.rule>summary::-webkit-details-marker{display:none}
 details.rule>summary b{flex:1}
 details.rule>p{margin:8px 0 0 36px}
+
+/* ---------- 1.4 เดินเครื่องทั้งระบบ ---------- */
+.fs-tools{display:flex;gap:10px 14px;flex-wrap:wrap;align-items:center}
+.fs-tools label{display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
+.fs-tools select{font:inherit;padding:4px 8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.fs-fig figcaption .fs-k::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c);margin:0 4px 0 8px;vertical-align:-1px}
+.fs-dot{stroke:#fff;stroke-width:1.2;pointer-events:none}
+.fs-led.g{color:#16a34a}.fs-led.y{color:#ca8a04}.fs-led.r{color:var(--warn)}
+svg.oc .zeo circle.n{fill:#e8590c;opacity:.9}
+.part.fs-flt .hit{stroke:var(--warn);stroke-width:3;stroke-dasharray:5 4;fill:var(--warn-soft);fill-opacity:.5}
+svg.cw .cw-bg{fill:#eef4f8;stroke:#d6e2ea}
+svg.cw .cw-top{fill:#e4ebf0;stroke:#5f6f7d;stroke-width:1.2}
+svg.cw .cw-side{fill:#c3cfd8;stroke:#5f6f7d;stroke-width:1.2}
+svg.cw .tb{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:7}
+svg.cw .tb.air{stroke:#9aa4b2}svg.cw .tb.o2{stroke:#2b82e6}svg.cw .tb.n2{stroke:#ec6a1e}
+svg.cw .tbo{fill:none;stroke:#3d4a57;stroke-width:9;stroke-linecap:round;stroke-linejoin:round;opacity:.22}
+svg.cw .bead{fill:#d9d2b8;stroke:#a89f80;stroke-width:.6;transition:fill .25s}
+svg.cw .bead.n{fill:#f08a4b;stroke:#c45a18}
+svg.cw .tag{fill:#fff;stroke:#9fb6c7;stroke-width:1}
+svg.cw .ld{stroke:#7d93a5;stroke-width:1;fill:none}
+svg.cw .cw-l1{font-size:13px;font-weight:600;fill:#1d2430}
+svg.cw .cw-l2{font-size:12px;fill:#5d6675}
+svg.cw [data-cw-pe].fs-on{fill:#f2c94c}
+
+svg.cw.cw-sm .cw-lbls{display:none}
+.fs-leak{font-size:14px;font-weight:700;fill:var(--warn);paint-order:stroke;stroke:#fff;stroke-width:3px}
